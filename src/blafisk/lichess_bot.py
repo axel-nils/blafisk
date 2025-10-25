@@ -13,7 +13,7 @@ class LichessBot:
         self.is_white = game["color"] == "white"
         self.is_my_turn = game["isMyTurn"]
         self.board = None
-        self.last_move_count = None
+        self.last_move_count = 0
 
     def stream_moves(self):
         """Yields UCI moves from the game stream."""
@@ -68,6 +68,10 @@ class LichessBot:
 
     def handle_game_state(self, payload):
         """Yield new moves and play if it's our turn"""
+        # Wait until board is initialized with gameFull
+        if self.board is None:
+            return
+        
         moves = payload.get("moves", "").split()
         old_count = self.last_move_count
         new_moves = moves[old_count:]
