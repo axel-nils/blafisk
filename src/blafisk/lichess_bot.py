@@ -2,11 +2,13 @@ import random
 import json
 import chess
 from .lichess_client import LichessClient
+from .chess_llm import ChessLLM
 
 
 class LichessBot:
     def __init__(self, client, game):
         self.client: LichessClient = client
+        self.llm = ChessLLM()
         self.game_id = game["gameId"]
         self.is_white = game["color"] == "white"
         self.is_my_turn = game["isMyTurn"]
@@ -90,7 +92,8 @@ class LichessBot:
         legal_moves = list(self.board.legal_moves)
         if not legal_moves:
             return None
-        move = random.choice(legal_moves).uci()
+        # move = random.choice(legal_moves).uci()
+        move = self.llm.predict_next_move(self.board)
         return move
 
     def run(self):

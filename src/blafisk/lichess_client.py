@@ -1,5 +1,5 @@
 import requests
-
+import json
 
 class LichessClient:
 
@@ -46,9 +46,9 @@ class LichessClient:
         url = f"{self.base_url}/bot/game/{game_id}/abort"
         self.api_post(url)
 
-    def get_event_stream(self):
+    def get_event_stream(self, timeout=15):
         url = f"{self.base_url}/stream/event"
-        return self.api_get(url, stream=True, timeout=15)
+        return self.api_get(url, stream=True, timeout=timeout)
 
     def get_game_stream(self, game_id):
         url = f"{self.base_url}/bot/game/stream/{game_id}"
@@ -82,6 +82,20 @@ class LichessClient:
 
     def challenge(self, username, payload):
         return self.api_post("challenge", username, payload=payload)
+    
+    def get_challenge(self):
+        response = self.get_event_stream(timeout=15)
+
+        for line in response.iter_lines():
+            if line:
+                decoded = line.decode('utf-8')
+                print(f"Got: {decoded}")
+                if decoded.strip():
+                    event = json.loads(decoded)
+                    if event.get('type') == 'challenge':
+                        challenge_id = event['challenge']['id']
+                        challenger_username = event['challenge']['challenger']['name']
+                        return challenge_id, challenger_username
 
     def cancel(self, challenge_id):
         self.api_post("cancel", challenge_id)
