@@ -38,10 +38,18 @@ Blåfisk is a chess bot package that uses [lichess](https://lichess.org/) as an 
    source .venv/bin/activate
    ```
 
-4. **Install PyTorch with CUDA support**
+4. **Install PyTorch**
+
+   With cuda:
 
    ```bash
    pip install torch==2.9.0+cu130 --index-url https://download.pytorch.org/whl/cu130
+   ```
+
+   Without cuda:
+
+   ```bash
+   pip install torch==2.9.0
    ```
 
 5. **Install this package**
@@ -64,7 +72,7 @@ Blåfisk is a chess bot package that uses [lichess](https://lichess.org/) as an 
 - **Minimum**: 4GB RAM, CPU
 - **Recommended**: NVIDIA GPU with 4GB+ VRAM
 
-The neural network uses approximately 2GB of VRAM when running with float16 precision on CUDA.
+The neural network uses less than 2GB of VRAM when running with float16 precision on CUDA.
 
 ## Acknowledgements
 

@@ -26,22 +26,33 @@ class GenerationConfig:
 class ChessLLM:
     """Chess move prediction using LLM."""
     
-    def __init__(self, model_id: str = "lazy-guy12/chess-llama", device: str = "cuda"):
+    def __init__(self, model_id: str = "lazy-guy12/chess-llama", device: Optional[str] = None):
         """
         Initialize the Chess LLM.
         
         Args:
             model_id: HuggingFace model identifier
-            device: Device to run the model on ('cuda' or 'cpu')
+            device: Device to run the model on ('cuda', 'cpu', or None for auto-detect)
         """
+        # Auto-detect device if not specified
+        if device is None:
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+        
         self.device = device
         self.model_id = model_id
         
+        print(f"Using device: {self.device}")
+        
+        # Load config, tokenizer, and model
         self.config = AutoConfig.from_pretrained(model_id)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+        
+        # Use float16 only on CUDA, float32 on CPU
+        dtype = torch.float16 if device == "cuda" else torch.float32
+        
         self.model = AutoModelForCausalLM.from_pretrained(
             model_id,
-            dtype=torch.float16 if device == "cuda" else torch.float32
+            dtype=dtype
         )
         self.model = self.model.to(device)
         self.model.eval()
@@ -310,7 +321,7 @@ class ChessLLM:
 
 def main():
     """Example usage of the ChessLLM class."""
-    chess_llm = ChessLLM(device="cuda")
+    chess_llm = ChessLLM()
     
     print("Example 1: Predict single move (auto-detects whose turn it is)")
     board = chess.Board()
@@ -324,7 +335,7 @@ def main():
     
     print("Example 2: Get top 5 move suggestions")
     gen_config = GenerationConfig(num_suggestions=5)
-    suggestions = chess_llm.suggest_moves(board, gen_config=gen_config)
+    suggestions = chess_llm.suggest_moves(board, gen_config=gen_config)  # Auto-determines result
     for i, (move, score) in enumerate(suggestions, 1):
         print(f"{i}. {move}: {score:.4f}")
     print()
