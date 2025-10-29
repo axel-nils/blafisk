@@ -67,6 +67,8 @@ Blåfisk is a chess bot package that uses [lichess](https://lichess.org/) as an 
    LICHESS_TOKEN=
    ```
 
+Note: On Windows, either run Python as administrator or activate developer mode in the settings to ensure the model is cached efficiently.
+
 ## Hardware Requirements
 
 - **Minimum**: 4GB RAM, CPU

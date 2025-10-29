@@ -89,7 +89,6 @@ class LichessClient:
         for line in response.iter_lines():
             if line:
                 decoded = line.decode('utf-8')
-                print(f"Got: {decoded}")
                 if decoded.strip():
                     event = json.loads(decoded)
                     if event.get('type') == 'challenge':
